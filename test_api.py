@@ -2,7 +2,9 @@ from fastapi.testclient import TestClient
 from main import app,server
 import pytest
 import asyncio
-    
+
+client = TestClient(app)
+
 @pytest.fixture(scope="module")
 def event_loop():
     loop = asyncio.get_event_loop_policy().new_event_loop()
@@ -18,13 +20,14 @@ async def server():
     await asyncio.sleep(1)
 
     yield  test_get_todos()
+    yield test_create_todos()
 
     # Stop the server
     await server.should_exit()
     
 def test_get_todos():
     # Create a FastAPI test client
-    client = TestClient(app)
+    
 
     # Perform a GET request to the /todos endpoint
     response = client.get("/todos/")
@@ -49,4 +52,24 @@ def test_get_todos():
             "priority": 4
         }
     ]
+    assert response.json() == expected_data
+    
+def test_create_todos():
+    # Define the request payload
+    todo_data = {
+        "title": "Test Todo",
+        "description": "This is a test todo",
+        "priority": 3,
+        "completed": False
+    }
+
+    # Perform a POST request to the /create_todo endpoint
+    response = client.post("/todos/create_todo", json=todo_data)
+
+    # Check that the response status code is 201 (Created)
+    assert response.status_code == 200
+    expected_data = {
+        "status": 201,
+        "transaction": "Successfull"
+    }
     assert response.json() == expected_data

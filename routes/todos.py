@@ -40,7 +40,7 @@ async def create_todos(todo:TodoModel,db:session = Depends(get_db)):
     return Successful_Response(201)
 
 @router.post('/delete_todo/{todo_id}')
-async def create_todos(todo_id:int,db:session = Depends(get_db)):
+async def delete_todos(todo_id:int,db:session = Depends(get_db)):
     todo_model = db.query(Todos).filter(Todos.id==todo_id).first()
     if todo_model is None:
         raise HTTP_Exception()
