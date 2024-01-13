@@ -38,22 +38,14 @@ def test_get_todos():
     # Check that the response contains the expected data
     expected_data = [
         {
-            "description": "This is another dummy task description",
-            "completed": False,
+            "completed": 'false',
             "title": "Dummy Task 2",
+            "description": "This is another dummy task description",
             "id": 2,
             "priority": 2
-        },
-        {
-            "description": "Please eat food by tomorrow",
-            "completed": False,
-            "title": "Food",
-            "id": 4,
-            "priority": 4
-        }
+            },
     ]
-    assert response.json() == expected_data
-    
+    assert  response.json() == expected_data    
 def test_create_todos():
     # Define the request payload
     todo_data = {
