@@ -19,28 +19,11 @@ async def server():
 
     # Provide the server some time to start up
     await asyncio.sleep(1)
-    yield test_create_todos()
-    yield test_get_todos() 
-    yield test_delete_todos()
-    yield test_delete_todo_not_found()
+    yield server()
     # Stop the server
     await server.should_exit()
  
-def test_get_todos():
-    # Create a FastAPI test client
-    
-    # Perform a GET request to the /todos endpoint
-    response = client.get("/todos/")
-    assert response.status_code == 200
-    last_id = Last_Todo()
-    expected_data = todo_data = {
-        "title": "Test Todo",
-        "description": "This is a test todo",
-        "priority": 3,
-        "completed": False,
-        'id': last_id
-    }
-    assert expected_data in response.json()
+
       
     
 def test_create_todos():
@@ -63,6 +46,38 @@ def test_create_todos():
     }
     assert response.json() == expected_data
 
+def test_get_todos():
+    # Create a FastAPI test client
+    
+    # Perform a GET request to the /todos endpoint
+    response = client.get("/todos/")
+    assert response.status_code == 200
+    last_id = Last_Todo()
+    expected_data = todo_data = {
+        "title": "Test Todo",
+        "description": "This is a test todo",
+        "priority": 3,
+        "completed": False,
+        'id': last_id
+    }
+    assert expected_data in response.json()
+
+def test_update_todos():
+    last_id = Last_Todo()
+    response = client.patch(f'/todos/{last_id}?completed={True}')
+    response.status_code==200
+    expected_data = {
+        "status": 200,
+        "transaction": "Successfull"
+    }
+    assert response.json() == expected_data
+
+def test_updated_status_of_todo():
+    last_id = Last_Todo()
+    last_todo_status = Last_Todo_Status()
+    assert True == last_todo_status
+
+
 def test_delete_todos():
     last_id = Last_Todo()
     response = client.delete(f"todos/delete_todo/{last_id}")
@@ -84,3 +99,9 @@ def Last_Todo():
     todos = response_for_last_id.json()
     last_todo_id = todos[-1]['id']
     return last_todo_id
+
+def Last_Todo_Status():
+    response_for_last_id = client.get('/todos/')
+    todos = response_for_last_id.json()
+    last_todo_status = todos[-1]['completed']
+    return last_todo_status

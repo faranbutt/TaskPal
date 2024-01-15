@@ -47,7 +47,31 @@ async def delete_todos(todo_id:int,db:session = Depends(get_db)):
     db.query(Todos).filter(Todos.id==todo_id).delete()
     db.commit()
     return Successful_Response(201)
-    
+
+@router.put('/{todo_id}')
+async def update_todos(todo_id:int,todo:TodoModel,db:session = Depends(get_db)):
+    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+    if todo_model is None:
+        raise HTTP_Exception()
+    todo_model.title = todo.title
+    todo_model.description = todo.description
+    todo_model.priority = todo.priority
+    todo_model.completed = todo.completed
+    db.add(todo_model)
+    db.commit()
+    return Successful_Response(200)
+
+@router.patch('/{todo_id}')
+async def update_status_todos(todo_id:int, completed:bool, db:session = Depends(get_db)):
+    todo_model = db.query(Todos).filter(Todos.id == todo_id).first()
+    if todo_model is None:
+        raise HTTP_Exception()
+
+    todo_model.completed = completed
+    db.add(todo_model)
+    db.commit()
+    return Successful_Response(200)
+
 def Successful_Response(status_code:int):
     
     return {'status':status_code,'transaction':'Successfull'}

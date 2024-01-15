@@ -5,7 +5,9 @@ import uvicorn
 
 
 app =  FastAPI()
-
+@app.get('/')
+def page():
+    return "Welcome to TODO APP"
 app.include_router(todos.router)
 app.include_router(auth.router)
 config = uvicorn.Config("main:app", port=5000, log_level="info")
